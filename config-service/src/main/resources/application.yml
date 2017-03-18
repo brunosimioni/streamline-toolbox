@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: config-service
+
+  profiles:
+    active: native
+
+  cloud:
+    config:
+      server:
+        native:
+         searchLocations: file:///${user.home}/git/orderfy/configs,file:///configs

@@ -1,0 +1,49 @@
+version: '2'
+services:
+
+
+  config-service:
+    image: java:openjdk-8u91-jdk
+    working_dir: /app
+    volumes:
+      - ./config-service/target:/app
+      - ./scripts:/scripts
+      - ./newrelic:/newrelic
+      - ./configs:/configs
+    command: /scripts/run-spring-boot.sh 90 config-service.jar config-service.yml
+    environment:
+      NEW_RELIC_LICENSE_KEY: ${NRLK}
+    ports:
+      - "8000:8080"
+      
+  discovery-service:
+    image: java:openjdk-8u91-jdk
+    working_dir: /app
+    volumes:
+      - ./discovery-service/target:/app
+      - ./scripts:/scripts
+      - ./newrelic:/newrelic
+    command: /scripts/wait-for-it.sh -t 60 -s config-service:8080 -- /scripts/run-spring-boot.sh 90 discovery-service.jar discovery-service.yml
+    environment:
+      SPRING_CLOUD_CONFIG_URI: http://config-service:8080
+      SPRING_PROFILES_ACTIVE: docker-compose
+      NEW_RELIC_LICENSE_KEY: ${NRLK}
+    ports:
+      - "8001':8080"
+    depends_on:
+      - config-service
+      
+  apigateway-service:
+    image: java:openjdk-8u91-jdk
+    working_dir: /app
+    volumes:
+      - ./apigateway-service/target:/app
+      - ./scripts:/scripts
+      - ./newrelic:/newrelic
+    command: /scripts/wait-for-config-and-discovery.sh /scripts/run-spring-boot.sh 256 apigateway-service.jar apigateway-service.yml
+    environment:
+      SPRING_CLOUD_CONFIG_URI: http://config-service:8000
+      SPRING_PROFILES_ACTIVE: docker-compose
+      NEW_RELIC_LICENSE_KEY: ${NRLK}
+    ports:
+      - "8002:8080"
