@@ -10,7 +10,7 @@
 	</parent>
 
 	<groupId>com.brunosimioni</groupId>
-	<artifactId>streamline-toolbox/artifactId>
+	<artifactId>streamline-toolbox</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
