@@ -1,6 +1,11 @@
 version: '2'
 services:
 
+  rabbitmq:
+    image: rabbitmq:3.5.3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   config-service:
     image: java:openjdk-8u91-jdk
@@ -10,7 +15,7 @@ services:
       - ./scripts:/scripts
       - ./newrelic:/newrelic
       - ./configs:/configs
-    command: /scripts/run-spring-boot.sh 90 config-service.jar config-service.yml
+    command: /scripts/run-spring-boot.sh 128 config-service.jar nr-config-service.yml
     environment:
       NEW_RELIC_LICENSE_KEY: ${NRLK}
     ports:
@@ -23,13 +28,13 @@ services:
       - ./discovery-service/target:/app
       - ./scripts:/scripts
       - ./newrelic:/newrelic
-    command: /scripts/wait-for-it.sh -t 60 -s config-service:8080 -- /scripts/run-spring-boot.sh 90 discovery-service.jar discovery-service.yml
+    command: /scripts/wait-for-it.sh -t 60 -s config-service:8080 -- /scripts/run-spring-boot.sh 128 discovery-service.jar nr-discovery-service.yml
     environment:
       SPRING_CLOUD_CONFIG_URI: http://config-service:8080
       SPRING_PROFILES_ACTIVE: docker-compose
       NEW_RELIC_LICENSE_KEY: ${NRLK}
     ports:
-      - "8001':8080"
+      - "8001:8080"
     depends_on:
       - config-service
       
@@ -40,9 +45,9 @@ services:
       - ./apigateway-service/target:/app
       - ./scripts:/scripts
       - ./newrelic:/newrelic
-    command: /scripts/wait-for-config-and-discovery.sh /scripts/run-spring-boot.sh 256 apigateway-service.jar apigateway-service.yml
+    command: /scripts/wait-for-config-and-discovery.sh /scripts/run-spring-boot.sh 256 apigateway-service.jar nr-apigateway-service.yml
     environment:
-      SPRING_CLOUD_CONFIG_URI: http://config-service:8000
+      SPRING_CLOUD_CONFIG_URI: http://config-service:8080
       SPRING_PROFILES_ACTIVE: docker-compose
       NEW_RELIC_LICENSE_KEY: ${NRLK}
     ports:

@@ -3,6 +3,6 @@ spring:
     name: discovery-service
   cloud:
     config:
-     uri: http://localhost:8004
+     uri: http://localhost:8000
   profiles:
     active: local
