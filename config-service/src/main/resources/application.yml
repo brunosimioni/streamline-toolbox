@@ -10,3 +10,5 @@ spring:
       server:
         native:
          searchLocations: file:///${user.home}/git/streamline-toolbox/configs,file:///configs
+         
+management.security.enabled: false
