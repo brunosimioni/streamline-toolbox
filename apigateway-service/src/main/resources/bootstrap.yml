@@ -3,6 +3,6 @@ spring:
     name: apigateway-service
   cloud:
     config:
-     uri: http://localhost:8000
+     uri: http://config-service.streamline
   profiles:
     active: local

@@ -1,18 +1,6 @@
 version: '2'
 services:
 
-  rabbitmq:
-    image: rabbitmq:3.5.3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-  mongodb:
-    image: mongo:3.0.4
-    ports:
-      - "27017:27017"
-    command: mongod --smallfiles
-
   config-service:
     image: java:openjdk-8u91-jdk
     working_dir: /app
@@ -27,8 +15,8 @@ services:
     ports:
       - "8080"
     labels:
-        - "interlock.hostname=config"
-        - "interlock.domain=streamline"
+      - "interlock.hostname=config-service"
+      - "interlock.domain=streamline"
       
   discovery-service:
     image: java:openjdk-8u91-jdk
@@ -47,9 +35,8 @@ services:
     depends_on:
       - config-service
     labels:
-        - "interlock.hostname=discovery"
-        - "interlock.domain=streamline"
-      
+      - "interlock.hostname=discovery-service"
+      - "interlock.domain=streamline"
 
   apigateway-service:
     image: java:openjdk-8u91-jdk
@@ -63,12 +50,12 @@ services:
       SPRING_CLOUD_CONFIG_URI: http://config-service:8080
       SPRING_PROFILES_ACTIVE: docker-compose
       NEW_RELIC_LICENSE_KEY: ${NRLK}
-    labels:
-      - "interlock.hostname=apigateway"
-      - "interlock.domain=streamline.com"
     ports:
       - "8080"
+    depends_on:
+      - config-service
+      - discovery-service
     labels:
-      - "interlock.hostname=apigateway"
+      - "interlock.hostname=apigateway-service"
       - "interlock.domain=streamline"
 

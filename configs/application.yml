@@ -6,8 +6,6 @@ eureka:
   instance:
     prefer-ip-address: true
 
-metrics:
-  reporters:
-    - type: datadog
-      transport:
-        type: http
+management:
+  security:
+    enabled: false
