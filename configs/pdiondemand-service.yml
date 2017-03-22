@@ -1,0 +1,34 @@
+spring:
+  profiles: local
+  cloud:
+    stream:
+      binders:
+        rabbit1:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service.streamline/eureka
+      
+---
+spring:
+  profiles: docker-compose
+  cloud:
+    stream:
+      binders:
+        rabbit1:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: rabbitmq
+                
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8080/eureka
